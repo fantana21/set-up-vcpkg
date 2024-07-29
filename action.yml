@@ -45,11 +45,17 @@ runs:
   using: composite
   steps:
     - name: Set up vcpkg
-    uses: friendlyanon/setup-vcpkg@v1
-    with:
-      committish: ${{ inputs.COMMITTISH }}
-      cache-key: ${{ inputs.cache-key }}
-      cache-restore-keys: ${{ inputs.cache-restore-keys }}
+      id: set-up-vcpkg
+      uses: friendlyanon/setup-vcpkg@v1
+      with:
+        committish: ${{ inputs.COMMITTISH }}
+        cache-key: ${{ inputs.cache-key }}
+        cache-restore-keys: ${{ inputs.cache-restore-keys }}
+
+    - name: Store cache hit
+      id: store-cache-hit
+      shell: pwsh
+      run: echo "cache-hit=${{ steps.set-up-vcpkg.outputs.cache-hit }}" >> $env:GITHUB_OUTPUT
 
     - name: Authenticate private registry
       if: inputs.use-private-registry == 'true'
