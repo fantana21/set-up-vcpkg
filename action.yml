@@ -3,24 +3,11 @@ description: Install vcpkg, set environment variables, and cache the vcpkg binar
 author: Patrick Kappl
 
 inputs:
-  path:
-    default: vcpkg
-    required: false
-    description: >-
-      Directory where the vcpkg repository will be cloned to. Relative paths are resolved relative
-      to $HOME. The environment variable VCPKG_ROOT will be set to this path.
-
   committish:
     default: master
     required: false
     description: >-
       Committish of the vcpkg repository to checkout. This can be a branch, tag, or commit SHA.
-
-  cache:
-    default: "true"
-    required: false
-    description: >-
-      Whether to cache the vcpkg binary packages.
 
   cache-key:
     required: true
@@ -36,7 +23,7 @@ inputs:
       a cache. See https://github.com/actions/cache for more details.
 
   use-private-registry:
-    default: "false"
+    default: 'false'
     required: false
     description: >-
       Whether to use our private vcpkg registry. This will authenticate the registry with the
@@ -57,64 +44,12 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Set up VCPKG_ROOT
-      shell: pwsh
-      env:
-        INPUT_PATH: ${{ inputs.path }}
-      # TODO: Use Add-Content instead of echo
-      run: |
-        cd $HOME
-        New-Item -ItemType Directory -Force "$env:INPUT_PATH" > $null
-        cd "$env:INPUT_PATH"
-        echo "VCPKG_ROOT=$(Get-Location)" >> $env:GITHUB_ENV
-        Add-Content $env:GITHUB_PATH "$(Get-Location)"
-
-    - name: Clone vcpkg
-      shell: pwsh
-      working-directory: ${{ env.VCPKG_ROOT }}
-      env:
-        COMMITTISH: ${{ inputs.committish }}
-      run: |
-        git clone https://github.com/microsoft/vcpkg.git --no-checkout .
-        git checkout --quiet --force "$env:COMMITTISH"
-
-    - name: Set up VCPKG_DEFAULT_BINARY_CACHE
-      if: inputs.cache == 'true'
-      shell: pwsh
-      # Use Add-Content instead of echo
-      run: |
-        set CACHE_DIRECTORY "$env:VCPKG_ROOT/.cache"
-        echo "VCPKG_DEFAULT_BINARY_CACHE=$CACHE_DIRECTORY" >> $env:GITHUB_ENV
-        New-Item -ItemType Directory -Force "$CACHE_DIRECTORY" > $null
-
-    - name: Set up cache
-      id: set-up-cache
-      if: inputs.cache == 'true'
-      uses: actions/cache@v4
-      with:
-        path: |
-          ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          ${{ env.VCPKG_ROOT }}/vcpkg
-          ${{ env.VCPKG_ROOT }}/vcpkg.exe
-        key: ${{ inputs.cache-key }}
-        restore-keys: ${{ inputs.cache-restore-keys }}
-
-    - name: Store cache-hit
-      id: store-cache-hit
-      shell: pwsh
-      run: echo "cache-hit=${{ steps.set-up-cache.outputs.cache-hit }}" >> $env:GITHUB_OUTPUT
-
-    - name: Bootstrap vcpkg on Windows
-      if: steps.set-up-cache.outputs.cache-hit != 'true' && runner.os == 'Windows'
-      working-directory: ${{ env.VCPKG_ROOT }}
-      shell: pwsh
-      run: bootstrap-vcpkg.bat
-
-    - name: Bootstrap vcpkg on !Windows
-      if: steps.set-up-cache.outputs.cache-hit != 'true' && runner.os != 'Windows'
-      working-directory: ${{ env.VCPKG_ROOT }}
-      shell: bash
-      run: sh -e ./bootstrap-vcpkg.sh
+    - name: Set up vcpkg
+    uses: friendlyanon/setup-vcpkg@v1
+    with:
+      committish: ${{ inputs.COMMITTISH }}
+      cache-key: ${{ inputs.cache-key }}
+      cache-restore-keys: ${{ inputs.cache-restore-keys }}
 
     - name: Authenticate private registry
       if: inputs.use-private-registry == 'true'
