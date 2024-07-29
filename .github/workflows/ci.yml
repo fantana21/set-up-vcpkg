@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./
+        id: vcpkg
+        with:
+          committish: "49ac2134b31b95b0ddf29d56873dcd24392691df"
+          cache-key: ${{ runner.os }}
+
+      - run: |
+          printf $'Cache hit: \'%s\'\nVCPKG_DEFAULT_BINARY_CACHE: \'%s\'\n' \
+            "${{ steps.vcpkg.outputs.cache-hit }}" \
+            "$VCPKG_DEFAULT_BINARY_CACHE"
+          $VCPKG_ROOT/vcpkg version
