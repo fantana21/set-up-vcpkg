@@ -54,8 +54,12 @@ runs:
 
     - name: Store cache hit
       id: store-cache-hit
-      shell: pwsh
+      shell: bash
       run: echo "cache-hit=${{ steps.set-up-vcpkg.outputs.cache-hit }}" >> $env:GITHUB_OUTPUT
+
+    - name: Add VCPKG_ROOT to PATH
+      shell: bash
+      run: echo "${{ env.VCPKG_ROOT }}" >> $GITHUB_PATH
 
     - name: Authenticate private registry
       if: inputs.use-private-registry == 'true'
