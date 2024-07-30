@@ -1,4 +1,4 @@
-name: setup-vcpkg
+name: set-up-vcpkg
 description: Install vcpkg, set environment variables, and cache the vcpkg binary packages
 author: Patrick Kappl
 

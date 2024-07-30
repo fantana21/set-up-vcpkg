@@ -15,5 +15,5 @@ details.
 [MIT License](LICENSE)
 
 
-[1]: https://github.com/fantana21/setup-vcpkg/workflows/CI/badge.svg
-[2]: https://github.com/fantana21/setup-vcpkg/actions/workflows/ci.yml
+[1]: https://github.com/fantana21/set-up-vcpkg/workflows/CI/badge.svg
+[2]: https://github.com/fantana21/set-up-vcpkg/actions/workflows/ci.yml
