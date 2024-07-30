@@ -55,7 +55,7 @@ runs:
     - name: Store cache hit
       id: store-cache-hit
       shell: bash
-      run: echo "cache-hit=${{ steps.set-up-vcpkg.outputs.cache-hit }}" >> $env:GITHUB_OUTPUT
+      run: echo "cache-hit=${{ steps.set-up-vcpkg.outputs.cache-hit }}" >> $GITHUB_OUTPUT
 
     - name: Add VCPKG_ROOT to PATH
       shell: bash
