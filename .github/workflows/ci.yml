@@ -40,6 +40,7 @@ jobs:
         with:
           committish: "49ac2134b31b95b0ddf29d56873dcd24392691df"
           cache-key: ${{ runner.os }}
+          save-always: 'true'
           use-private-registry: 'true'
           private-registry-pat: ${{ secrets.VCPKG_REGISTRY_PAT }}
       - name: Print some infos
