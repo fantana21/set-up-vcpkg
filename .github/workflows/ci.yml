@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up vcpkg and with private registry
         uses: ./
         id: vcpkg
@@ -19,13 +18,34 @@ jobs:
           cache-key: ${{ runner.os }}
           use-private-registry: 'true'
           private-registry-pat: ${{ secrets.VCPKG_REGISTRY_PAT }}
-
       - name: Print some infos
         run: |
           printf $'Cache hit: \'%s\'\nVCPKG_DEFAULT_BINARY_CACHE: \'%s\'\n' \
             "${{ steps.vcpkg.outputs.cache-hit }}" \
             "$VCPKG_DEFAULT_BINARY_CACHE"
           $VCPKG_ROOT/vcpkg version
-
       - name: Install a package from the private registry
         run: vcpkg install cmdline
+
+  test-save-always:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up vcpkg and with private registry
+        uses: ./
+        id: vcpkg
+        with:
+          committish: "49ac2134b31b95b0ddf29d56873dcd24392691df"
+          cache-key: ${{ runner.os }}
+          use-private-registry: 'true'
+          private-registry-pat: ${{ secrets.VCPKG_REGISTRY_PAT }}
+      - name: Print some infos
+        run: |
+          printf $'Cache hit: \'%s\'\nVCPKG_DEFAULT_BINARY_CACHE: \'%s\'\n' \
+            "${{ steps.vcpkg.outputs.cache-hit }}" \
+            "$VCPKG_DEFAULT_BINARY_CACHE"
+          $VCPKG_ROOT/vcpkg version
+      - name: Install a package from the private registry
+        run: vcpkg install cmdline
+      - name: Fail the job on purpose to test the save-always feature
+        run: exit 1

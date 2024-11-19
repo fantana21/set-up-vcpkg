@@ -22,6 +22,12 @@ inputs:
       Additional keys for restoring the vcpkg cache. They are used if the primary key does not find
       a cache. See https://github.com/actions/cache for more details.
 
+  save-always:
+    default: 'false'
+    required: false
+    description: >-
+      Always run the "post" script to save whatever is in the cache.
+
   use-private-registry:
     default: 'false'
     required: false
@@ -51,6 +57,7 @@ runs:
         committish: ${{ inputs.COMMITTISH }}
         cache-key: ${{ inputs.cache-key }}
         cache-restore-keys: ${{ inputs.cache-restore-keys }}
+        save-always: ${{ inputs.save-always }}
 
     - name: Store cache hit
       id: store-cache-hit
